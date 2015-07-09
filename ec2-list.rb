@@ -28,7 +28,7 @@ class Ec2List
   end
 
   def values(key)
-    result.map { |x| x[key.to_sym] }.sort
+    result.map { |x| x[key.to_sym] }.compact.sort
   end
 
   def reservations
