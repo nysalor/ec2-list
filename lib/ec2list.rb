@@ -32,15 +32,15 @@ module Ec2list
           type: instance.instance_type,
           status: instance.state.name,
           since: since_about(Time.now - instance.launch_time),
-          tag: instance.tags.find { |tag| tag.key == 'Name' }.value,
+          tag: instance.tags.find { |tag| tag.key == 'Name' }.value.gsub(' ', '_'),
           fqdn: instance.public_dns_name,
           ip_addr: instance.public_ip_address
         }
       }.sort_by { |x| x[:tag] }
     end
     
-    def values(key)
-      result.map { |x| x[key.to_sym] }.compact.sort
+    def values(keys)
+      result.map { |x| keys.map { |k| x[k] }.join (' ') }.compact.sort
     end
 
     def reservations

@@ -14,7 +14,7 @@ module Ec2list
     desc "display", "display instances list"
     def display
       if options[:k]
-        ec2_list.values(options[:k].to_sym).each do |v|
+        ec2_list.values(options[:k].split(',').map(&:to_sym)).each do |v|
           puts v if v.length > 0
         end
       elsif options[:l]
