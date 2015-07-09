@@ -66,11 +66,11 @@ module Ec2list
 
     def since_about(second)
       if second > 86400
-        "#{second.quo(86400).to_i} day"
+        "#{second.quo(86400).to_i}d"
       elsif second > 3600
-        "#{second.quo(3600).to_i} hour"
+        "#{second.quo(3600).to_i}h"
       else
-        "#{second.quo(60).to_i} min"
+        "#{second.quo(60).to_i}m"
       end
     end
   end
