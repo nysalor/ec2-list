@@ -12,9 +12,9 @@ module Ec2list
     
     desc "display", "display instances list"
     def display
-      if options[:key]
-        ec2_list.values(options[:key].to_sym).each do |v|
-          puts v
+      if options[:k]
+        ec2_list.values(options[:k].to_sym).each do |v|
+          puts v if v.length > 0
         end
       else
         Formatador.display_compact_table ec2_list.result, [:id, :type, :tag, :status, :fqdn, :ip_addr, :since]
