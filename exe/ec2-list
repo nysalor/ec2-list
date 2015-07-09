@@ -1,3 +1,5 @@
 #!/usr/bin/env ruby
 
-require "ec2/list"
+require "ec2list"
+
+Ec2list::CLI.start
