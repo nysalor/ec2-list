@@ -29,7 +29,7 @@ module Ec2list
     private
 
     def display_columns
-      [:id, :type, :tag, :status, :fqdn, :ip_addr, :since]
+      ec2_list.display_columns
     end
 
     def ec2_list

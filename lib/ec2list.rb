@@ -18,27 +18,19 @@ module Ec2list
     end
 
     def result
-      if @tag
-        instance_list.select { |instance| instance[:tag].include?(@tag) }
-      else
-        instance_list
-      end
+      instances.map { |instance|
+        display_columns.zip(display_columns.map { |col| instance.send(col) }).to_h
+      }
+    end
+
+    def display_columns
+      %i(id type tag status fqdn ip_addr since)
     end
 
     def instance_list
-      instances.map { |instance|
-        {
-          id: instance.instance_id,
-          type: instance.instance_type,
-          status: instance.state.name,
-          since: since_about(Time.now - instance.launch_time),
-          tag: instance.tags.find { |tag| tag.key == 'Name' }.value.gsub(' ', '_'),
-          fqdn: instance.public_dns_name,
-          ip_addr: instance.public_ip_address
-        }
-      }.sort_by { |x| x[:tag] }
+      instances.sort_by(&:tag)
     end
-    
+
     def values(keys)
       result.map { |x| keys.map { |k| x[k] }.join (' ') }.compact.sort
     end
@@ -46,9 +38,17 @@ module Ec2list
     def reservations
       ec2.describe_instances(filters: [filter]).reservations
     end
-    
+
     def instances
-      ec2.describe_instances(filters: [filter]).reservations.map { |x| x.instances }.flatten
+      if @tag
+        all_instances.select { |instance| instance.cont?(@tag) }
+      else
+       all_instances
+      end
+    end
+
+    def all_instances
+      reservations.map { |x| x.instances }.flatten.map { |ec2| Instance.new ec2 }
     end
 
     def filter
@@ -61,16 +61,47 @@ module Ec2list
         {}
       end
     end
+  end
+
+  class Instance
+    attr_accessor :id, :type, :status, :since, :tags, :fqdn, :ip_addr
+
+    def initialize(ec2)
+      @id = ec2.instance_id
+      @type = ec2.instance_type
+      @status = ec2.state.name
+      @since = since_about(Time.now - ec2.launch_time)
+      @tags = ec2.tags || []
+      @fqdn = ec2.public_dns_name
+      @ip_addr = ec2.public_ip_address
+    end
+
+    def name
+      name_tag = tags.find { |tag| tag.key == 'Name' }
+      if name_tag
+        name_tag.value.gsub(' ', '_')
+      else
+        nil
+      end
+    end
+
+    def tag
+      name
+    end
+
+    def cont?(tag)
+      name && name.include?(tag)
+    end
 
     private
 
-    def since_about(second)
-      if second > 86400
-        "#{second.quo(86400).to_i}d"
-      elsif second > 3600
-        "#{second.quo(3600).to_i}h"
+    def since_about(since)
+      if since > 86400
+        "#{since.quo(86400).to_i}d"
+      elsif since > 3600
+        "#{since.quo(3600).to_i}h"
       else
-        "#{second.quo(60).to_i}m"
+        "#{since.quo(60).to_i}m"
       end
     end
   end
