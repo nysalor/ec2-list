@@ -24,7 +24,7 @@ module Ec2list
     end
 
     def display_columns
-      %i(id type tag status fqdn ip_addr since)
+      %i(id type tag status fqdn ip_addr private_addr since)
     end
 
     def instance_list
@@ -64,7 +64,7 @@ module Ec2list
   end
 
   class Instance
-    attr_accessor :id, :type, :status, :since, :tags, :fqdn, :ip_addr
+    attr_accessor :id, :type, :status, :since, :tags, :fqdn, :ip_addr, :private_addr
 
     def initialize(ec2)
       @id = ec2.instance_id
@@ -74,6 +74,7 @@ module Ec2list
       @tags = ec2.tags || []
       @fqdn = ec2.public_dns_name
       @ip_addr = ec2.public_ip_address
+      @private_addr = ec2.private_ip_address
     end
 
     def name
