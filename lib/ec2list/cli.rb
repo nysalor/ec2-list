@@ -1,3 +1,4 @@
+# typed: true
 require 'thor'
 
 module Ec2list

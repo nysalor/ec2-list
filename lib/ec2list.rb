@@ -1,3 +1,4 @@
+# typed: true
 require "ec2list/version"
 require "ec2list/cli"
 require 'aws-sdk'
