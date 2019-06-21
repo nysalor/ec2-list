@@ -28,6 +28,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "sorbet"
+  spec.add_development_dependency "sorbet-runtime"
   spec.add_dependency "thor"
   spec.add_dependency "aws-sdk"
   spec.add_dependency "formatador"
